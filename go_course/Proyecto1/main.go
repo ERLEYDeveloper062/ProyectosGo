@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"Proyecto1/automata"
 
 	"fyne.io/fyne/app"
+	//"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/widget"
 )
 
@@ -90,16 +92,87 @@ func cargarJSON(rutaArchivo string, datos interface{}) error {
 	return nil
 }
 
+func interfazGrafica(automata *automata.Automata) {
+	a := app.New()
+
+	w := a.NewWindow("Automata")
+
+	estadosWidget := widget.NewLabel("Estados: " + strings.Join(automata.GetEstados(), ", "))
+	entradasWidget := widget.NewLabel("Entradas: " + strings.Join(automata.GetEntradas(), ", "))
+	//transicionesWidget := widget.NewLabel("Transiciones: " + strings.Join(automata.GetTransicion(), ", ") + "\n")
+
+	/*for i := 1; i < len(transiciones); i++ {
+		transicionesWidget.SetText(transicionesWidget.Text + strings.Join(transiciones[i], ", ") + "\n")
+	}*/
+
+	estadoInicialWidget := widget.NewLabel("Estado Inicial: " + automata.GetEstadoInicial())
+	estadosFinalesWidget := widget.NewLabel("Estados Finales: " + strings.Join(automata.EstadosFinales, ", "))
+
+	cadenaEntry := widget.NewEntry()
+	evaluarButton := widget.NewButton("Evaluar", func() {
+		cadena := cadenaEntry.Text
+		if pertenece(cadena, automata) {
+			w.SetContent(widget.NewVBox(
+				widget.NewLabel(fmt.Sprintf("La cadena '%s' es aceptada por el automata", cadena)),
+				//layout.NewSpacer(),
+				widget.NewButton("Cerrar", func() {
+					a.Quit()
+				}),
+			))
+		} else {
+			w.SetContent(widget.NewVBox(
+				widget.NewLabel(fmt.Sprintf("La cadena '%s' no es aceptada por el automata", cadena)),
+
+				//layout.NewSpacer(),
+				widget.NewButton("Cerrar", func() {
+					a.Quit()
+				}),
+			))
+		}
+	})
+
+	content := widget.NewVBox(
+		estadosWidget,
+		entradasWidget,
+		//layout.NewSpacer(),
+		estadoInicialWidget,
+		estadosFinalesWidget,
+		cadenaEntry,
+		evaluarButton,
+	)
+
+	w.SetContent(content)
+	w.ShowAndRun()
+}
+
 func main() {
 	fmt.Println("Inicio del proyecto")
 
-	myApp := app.New()
-	myWindow := myApp.NewWindow("Hola")
+	var automata1 automata.Automata
+	err := cargarJSON("automata1.json", &automata1)
+	if err != nil {
+		panic(err)
+	}
 
-	myWindow.SetContent(widget.NewLabel("Hola mundo"))
-	myWindow.ShowAndRun()
+	fmt.Printf("estado Inicial %v\n\r", automata1.GetEstadoInicial())
+	fmt.Printf("estado finales %v\n\r", automata1.EstadosFinales)
+	fmt.Printf("estados %v\n\r", automata1.Estados)
+	fmt.Printf("entradas %v\n\r", automata1.Entradas)
+	fmt.Printf("transiciones %v\n\r", automata1.Transiciones)
 
-	automata1 := automata.NewAutomata(
+	// Si el autómata no está completo, lo completamos
+	if !automataCompleto(&automata1) {
+		fmt.Println("El automata está incompeto lo completamos")
+		completarAutomata(&automata1)
+	}
+
+	interfazGrafica(&automata1)
+
+	//Supongamos que tenemos una instancia de la clase Automata llamada "automata" cargada previamente
+
+	// Verificar si la cadena pertenece al lenguaje del autómata
+
+	/*automata2 := automata.NewAutomata(
 		[]string{"q1", "q2"},
 		[]string{"0", "1"},
 		map[string]map[string]string{
@@ -109,16 +182,6 @@ func main() {
 		[]string{"q2"},
 	)
 
-	pertenece("0011", automata1)
+	*/
 
-	/*for llaveExterna, mapaInterno := range automata1.GetTransicion() {
-		fmt.Println("Llave externa", llaveExterna)
-
-		for llaveInterna, valor := range mapaInterno {
-			fmt.Println("Llave interna", llaveInterna, "Valor: ", valor)
-		}
-	}*/
-
-	/*print(automata1.GetEstadoInicial())
-	print(automata1.GetTransicion())*/
 }
