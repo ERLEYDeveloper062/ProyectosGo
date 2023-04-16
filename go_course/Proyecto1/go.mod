@@ -2,10 +2,12 @@ module Proyecto1
 
 go 1.20
 
-require fyne.io/fyne v1.4.3
+require (
+	fyne.io/fyne v1.4.3
+	fyne.io/fyne/v2 v2.3.3
+)
 
 require (
-	fyne.io/fyne/v2 v2.3.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fredbi/uri v0.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
