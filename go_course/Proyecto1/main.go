@@ -173,7 +173,7 @@ func main() {
 	fmt.Println("Inicio del proyecto")
 
 	var automata1 automata.Automata
-	err := cargarJSON("automata1.json", &automata1)
+	err := cargarJSON("automata4.json", &automata1)
 	if err != nil {
 		panic(err)
 	}
